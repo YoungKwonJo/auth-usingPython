@@ -37,8 +37,10 @@ def test(app):
   def selectPost():
     page = request.args.get('page', default = 1, type = int)
     print(page)
-
-    return json.dumps({"status":page})
+    try:
+      return select(page=page)
+    except:
+      return json.dumps({"status":"fail"})
 
 
  ## 데이터 업데이트 하기 POST

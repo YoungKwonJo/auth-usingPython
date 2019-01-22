@@ -3,23 +3,31 @@ from util.db   import db_session
 from datetime   import datetime, timedelta  
 import json
 
+def getData(data):
+  return {"id":data.id, "nickname":data.nickname, "date":str(data.date), "title":data.title, "contents":data.contents }
+
 def insert(nickname, password, title, contents):
   try:
     v = Test(nickname=nickname, password=password, title=title, contents=contents, date=datetime.utcnow())
     db_session.add(v)
-    db_session.commit()  
+    db_session.commit()   
     return True
   except: return False
 
 
 def select(page):
   pagesize = 10;
-  rows = db_session.query(Test).offset(pagesize*page).limit(pagesize)
-  return json.dumps([(dict(row.items())) for row in rows])
+  rows = db_session.query(Test).all() #.offset(pagesize*page).limit(pagesize)
+
+  #print(rows[0].nickname)
+  result = [getData(row)  for row in rows]
+
+  #print(result)
+  return json.dumps(result, ensure_ascii=False).encode('utf8')
 
 def selectOne(id):
-  out = db_session.query(Test).filter_by(id).first()
-  return json.dumps([(dict(row.items())) for row in rows])
+  rows = db_session.query(Test).filter_by(id).first()
+  return json.dumps([getData(row) for row in rows],ensure_ascii=False).encode('utf8')
 
 
 def update(id, password, nickname, title, contents):

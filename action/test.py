@@ -4,14 +4,21 @@ from datetime   import datetime, timedelta
 import json
 
 def insert(nickname, password, title, contents):
-  v = Test(nickname, password, title, contents)
-  db_session.add(v)
-  db_session.commit()  
+  try:
+    v = Test(nickname=nickname, password=password, title=title, contents=contents, date=datetime.utcnow())
+    db_session.add(v)
+    db_session.commit()  
+    return True
+  except: return False
 
 
 def select(page):
   pagesize = 10;
   rows = db_session.query(Test).offset(pagesize*page).limit(pagesize)
+  return json.dumps([(dict(row.items())) for row in rows])
+
+def selectOne(id):
+  out = db_session.query(Test).filter_by(id).first()
   return json.dumps([(dict(row.items())) for row in rows])
 
 

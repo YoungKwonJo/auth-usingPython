@@ -6,7 +6,7 @@ from datetime import datetime, timedelta
 
 from route.base import postData, errror, headerAuth, referer
 
-from action.test import insert, select, update, delete 
+from action.test import insert, select, update, delete, selectOne 
 
 
 def test(app):
@@ -35,12 +35,23 @@ def test(app):
   ## 데이터 읽기 GET
   @app.route("/list")
   def selectPost():
-    page = request.args.get('page', default = 1, type = int)
+    page = request.args.get('page', default = 0, type = int)
     print(page)
     try:
       return select(page=page)
     except:
       return json.dumps({"status":"fail"})
+
+  ## 데이터 읽기 GET
+  @app.route("/article")
+  def selectOnePost():
+    id = request.args.get('id', default = 0, type = int)
+    print(id)
+    try:
+      return selectOne(id=id)
+    except:
+      return json.dumps({"status":"fail"})
+
 
 
  ## 데이터 업데이트 하기 POST
@@ -60,6 +71,9 @@ def test(app):
   def deletePost():
     data = postData()
     if 'id' in data.keys() and 'password' in data.keys():
-      delete(id=data['id'],password=data['password'])
+      if(delete(id=data['id'],password=data['password'])):
+        return json.dumps({"status":"success"})
+      else: json.dumps({"status":"fail2"})
+    else: return json.dumps({"status":"fail1"})
 
 

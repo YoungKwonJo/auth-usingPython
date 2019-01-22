@@ -17,7 +17,7 @@ def insert(nickname, password, title, contents):
 
 def select(page):
   pagesize = 10;
-  rows = db_session.query(Test).all() #.offset(pagesize*page).limit(pagesize)
+  rows = db_session.query(Test).offset(pagesize*page).limit(pagesize).all()
 
   #print(rows[0].nickname)
   result = [getData(row)  for row in rows]
@@ -26,24 +26,30 @@ def select(page):
   return json.dumps(result, ensure_ascii=False).encode('utf8')
 
 def selectOne(id):
-  rows = db_session.query(Test).filter_by(id).first()
-  return json.dumps([getData(row) for row in rows],ensure_ascii=False).encode('utf8')
+  row = db_session.query(Test).filter_by(id=id).first()
+  return json.dumps([getData(row)],ensure_ascii=False).encode('utf8')
 
 
 def update(id, password, nickname, title, contents):
-  out = db_session.query(Test).filter_by(id, password ).first()
-  if not out:
-    try:
-      db_session.query(Test).filter_by(id).update({"nickname":nickname,"title":title,"contents":contents,"dateLastModify":datetime.utcnow() })
+  try:
+    out = db_session.query(Test).filter_by(id=id,password=password).first()
+    print(str(type(out)))
+    if "<class 'model.test.Test'>" == str(type(out)):
+      db_session.query(Test).filter_by(id=id,password=password).update({"nickname":nickname,"title":title,"contents":contents,"dateLastModify":datetime.utcnow() })
       db_session.commit()   
       return True
-    except: return False
+    else: return False
+  except: return False
 
 
 def delete(id, password):
   try:
-    db_session.delete(Test(id,password))
-    db_session.commit()
+    out = db_session.query(Test).filter_by(id=id, password=password ).first()
+    if "<class 'model.test.Test'>" == str(type(out)):
+      db_session.query(Test).filter_by(id=id, password=password ).delete()
+      db_session.commit()
+      return True
+    else: return False
   except: return False
 
 

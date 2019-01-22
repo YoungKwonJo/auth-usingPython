@@ -44,7 +44,7 @@ input[type=button], input[type=submit], input[type=reset], button {
 <textarea id="contents">
 </textarea >
 <br />
-<button onClick="insert()">등록하기</button>
+<button onClick="insert()">등록하기</button><button onClick="window.history.back()">취소</button>
 
 <script>
 
@@ -53,13 +53,24 @@ var passwordElement = document.getElementById('password');
 var titleElement = document.getElementById('title');
 var contentsElement = document.getElementById('contents');
 
+
 function insert(){
 
-  console.log(nicknameElement.value)
-  console.log(passwordElement.value)
-  console.log(titleElement.value)
-  console.log(contentsElement.value)
-
+console.log(nicknameElement.value)
+console.log(passwordElement.value)
+console.log(titleElement.value)
+console.log(contentsElement.value)
+var data = {
+   nickname:nicknameElement.value,
+   password:passwordElement.value,
+   title:titleElement.value,
+   contents:contentsElement.value
+}
+axios.post(`http://localhost:5000/insert`,data)
+.then(async (res)=>{
+    console.log(res.data)
+    window.history.back()
+})
 }
 
 </script>

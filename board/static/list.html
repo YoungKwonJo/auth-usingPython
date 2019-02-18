@@ -50,6 +50,7 @@ input[type=button], input[type=submit], input[type=reset], button {
     <tbody id="myTbody"></tbody>
 </table>
 <div id="myPage"></div>
+<div id="myDelete"></div>
 <button onClick="window.location.href='http://localhost:5000/static/index.html'">글쓰기</button>
 
 <script>
@@ -68,6 +69,8 @@ function getQueryVariable(e) {
 var page = getQueryVariable('page')?getQueryVariable('page'):0
 var myTbodyElement = document.getElementById('myTbody');
 var myPageElement = document.getElementById('myPage');
+
+var myDeleteElement = document.getElementById('myDelete');
 
 function range(start, end) {
     var total = [];
@@ -111,6 +114,7 @@ function pages(count){
     myPageElement.innerHTML = "---------"
   }
 }
+
 function show(){
   axios.get(`http://localhost:5000/list?page=${page}`)
   .then(async (res)=>{
@@ -119,10 +123,11 @@ function show(){
         var myhtml = ""
         pages(res.data.count)
         for await (var ii of res.data.data){
-            myhtml += "<tr onClick='window.location.href=\"http://localhost:5000/static/update.html?id="+
-                       ii.id+"\"'><td>"+
-                       ii.id+"</td><td>"+ii.nickname+"</td><td>"+
-                       ii.title+"</td><td>"+ii.date+"</td></tr>"
+            const showtext =" onClick='window.location.href=\"http://localhost:5000/static/update.html?id="+
+                       ii.id+"\"'" 
+            myhtml += "<tr><td "+showtext+">"+
+                       ii.id+"</td><td "+showtext+">"+ii.nickname+"</td><td "+showtext+">"+
+                       ii.title+"</td><td "+showtext+">"+ii.date+"</td><td><button onClick='showDelete(\""+ii.id+"\")'>삭제하기</button></td></tr>"
         }
         myTbodyElement.innerHTML = myhtml;
       }
@@ -131,6 +136,14 @@ function show(){
 
 }
 show(); 
+
+function showDelete(id){
+  myDeleteElement.innerHTML = "<input id='myPassword' placeholder='암호를 입력해주세요.'><button onClick='deleteAction(\""+id+"\")'>";
+}
+function deleteAction(id){
+  var myPassword = document.getElementById('myPassword').value;
+  consloe.log(myPassword)
+}
 
 </script>
 

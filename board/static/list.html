@@ -23,6 +23,24 @@ input[type=button], input[type=submit], input[type=reset], button {
   margin: 4px 2px;
   cursor: pointer;
 }
+
+#myPage ul {
+  display: flex;
+  width: 450px;
+}
+
+#myPage ul li {
+  display: flex;
+  padding: 6px 18px;
+  text-align: center;
+  margin-left: 5px;
+}
+
+.selpage {
+  background-color: #FF7F50;
+  color: white;
+}
+
 </style>
 </head>
 <body>
@@ -31,6 +49,7 @@ input[type=button], input[type=submit], input[type=reset], button {
     <thead><tr><th>번호</th></th><th>이름</th><th>제목</th><th>날짜</th></tr></thead>
     <tbody id="myTbody"></tbody>
 </table>
+<div id="myPage"></div>
 <button onClick="window.location.href='http://localhost:5000/static/index.html'">글쓰기</button>
 
 <script>
@@ -48,14 +67,58 @@ function getQueryVariable(e) {
 
 var page = getQueryVariable('page')?getQueryVariable('page'):0
 var myTbodyElement = document.getElementById('myTbody');
+var myPageElement = document.getElementById('myPage');
 
+function range(start, end) {
+    var total = [];
+    if (!end) {
+        end = start;
+        start = 0;
+    }
+    for (var i = start; i < end; i += 1) {
+        total.push(i);
+    }
+    return total;
+}
+function test(aaa){
+  console.log(aaa)
+  var aaa = "http://"+location.hostname+':5000/static/list.html?page='+aaa
+  window.location.href=aaa
+}
+function addhtml(pages){
+   let aaa = "";
+   pages.map((a,idx) =>{
+    if(a==page) aaa += "<li class='selpage'>"+a+"</li>"
+    else        aaa += "<li onclick='test(\""+a+"\")'>"+a+"</li>"
+   })
+   return aaa;
+}
+
+function pages(count){
+  const pagestep=5;
+  const onepage=10;
+  const totalpage = Math.floor( count/onepage ) 
+  const pagegroupS = page-page%pagestep
+  const pagegroupE = totalpage<page-page%pagestep+pagestep? totalpage:page-page%pagestep+pagestep
+  if(count>0){
+    const pages = range(pagegroupS, pagegroupE)
+    console.log(pages)
+    myPageElement.innerHTML = "<ul>"+"<li class='"+(0==page?'selpage':'')+"' onclick='test(\"0\")'>처음</li>"+
+                              addhtml(pages)+
+                              "<li class='"+(totalpage==page?'selpage':'')+"'  onclick='test(\""+totalpage+"\")'>끝</li>"+"</ul>"
+
+  }else {
+    myPageElement.innerHTML = "---------"
+  }
+}
 function show(){
   axios.get(`http://localhost:5000/list?page=${page}`)
   .then(async (res)=>{
       console.log(res.data)
-      if(res.data){
+      if(res.data.data&&res.data.count>0){
         var myhtml = ""
-        for await (var ii of res.data){
+        pages(res.data.count)
+        for await (var ii of res.data.data){
             myhtml += "<tr onClick='window.location.href=\"http://localhost:5000/static/update.html?id="+
                        ii.id+"\"'><td>"+
                        ii.id+"</td><td>"+ii.nickname+"</td><td>"+

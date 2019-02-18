@@ -69,7 +69,11 @@ var data = {
 axios.post(`http://localhost:5000/insert`,data)
 .then(async (res)=>{
     console.log(res.data)
-    window.history.back()
+    //window.history.back()
+   //var aaa = location.hostname+':5000/static/list.html'
+   var aaa = "http://"+location.hostname+':5000/static/list.html'
+   console.log(aaa)
+   window.location.href=aaa
 })
 }
 

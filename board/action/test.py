@@ -17,13 +17,19 @@ def insert(nickname, password, title, contents):
 
 def select(page):
   pagesize = 10;
-  rows = db_session.query(Test).offset(pagesize*page).limit(pagesize).all()
-
-  #print(rows[0].nickname)
-  result = [getData(row)  for row in rows]
-
-  #print(result)
-  return json.dumps(result, ensure_ascii=False).encode('utf8')
+  count = db_session.query(Test).count()
+  if count>0:
+    rows = db_session.query(Test).offset(pagesize*page).limit(pagesize).all()
+    
+    print("count : "+str(count))
+    
+    #print(rows[0].nickname)
+    result = [getData(row)  for row in rows]
+    
+    #print(result)
+    return json.dumps({'count':count,'data':result}, ensure_ascii=False).encode('utf8')
+  else:
+    return json.dumps({'count':0,'data':[]})
 
 def selectOne(id):
   row = db_session.query(Test).filter_by(id=id).first()

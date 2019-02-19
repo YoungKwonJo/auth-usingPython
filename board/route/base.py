@@ -20,6 +20,7 @@ def errror():
 
 def headerAuth():
     auth_header = request.headers['Authorization2']
+    #print(auth_header)
     #auth_header = request.headers.get('Authorization2')
     try:
         auth_token = auth_header.split(" ")[1]
@@ -41,4 +42,7 @@ def referer():
     return True
 
 
-
+def doIt(function):
+    if function: 
+        return json.dumps({"status":"success"})
+    else:  return json.dumps({"status":"fail"})

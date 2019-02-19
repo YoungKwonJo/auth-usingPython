@@ -12,7 +12,7 @@ def checkToken(token):
         #print(decoded)
           
         #print(decoded['jti'])
-        return {"type":decoded['type'], "role":decoded["role"], 'jti':decoded["jti"], 'token':token }
+        return {"type":decoded['type'], "role":decoded["role"], 'jti':decoded["jti"], 'token':token, 'nickname':decoded['nickname'], 'accountid':decoded['accountid'] }
     except jwt.exceptions.ExpiredSignatureError:
         #print("expired")
         return {"type":"exprired"}
@@ -22,7 +22,7 @@ def checkToken(token):
 
 
 ## 접속을 위한 token의 발급
-def makeToken(tokenId, tokenType, levelCode, nickname):
+def makeToken(tokenId, tokenType, nickname, accountid):
     starttime = datetime.utcnow()
     endtime  = datetime.utcnow() + timedelta(seconds=accesstokendurationSeconds)
     if "refresh" in tokenType:
@@ -30,7 +30,19 @@ def makeToken(tokenId, tokenType, levelCode, nickname):
     
     #{"exp": 종료일시(unixtime), "nbf": 시작일시(unixtime), "aud": "ai.industrysolution.co.kr",  //수신자
     #"iat": 발급시간(unixtime), "jti": 발급식별ID}
-    newToken = {"exp": endtime, "nbf": starttime, "aud": audience, "iat":starttime, "jti":tokenId, "type":tokenType, "role":levelCode, "nickname":nickname } 
+    newToken = {"exp": endtime, "nbf": starttime, "aud": audience, "iat":starttime, "jti":tokenId, "type":tokenType, "role":10, "nickname":nickname, "accountid":accountid } 
     newTokenEncoded = jwt.encode(newToken, secret)
 
     return newTokenEncoded
+
+## refreshToken을 통해 accessToken 재발급
+def refreshToken(refresh):
+    import json
+    try:
+        data = jwt.decode(refresh, secret)
+        import uuid
+        tokenId = str(uuid.uuid4())
+        accessToken = makeToken(tokenId=tokenId, tokenType='access', nickname=data['nickname'] )
+
+        return json.dumps({"accessToken":accessToken, "refreshToken":refresh})
+    except: return json.dumps({"status":"fail"})

@@ -51,12 +51,17 @@ def update(id, password, nickname, title, contents):
 def delete(id, password):
   try:
     out = db_session.query(Test).filter_by(id=id, password=password ).first()
+    print(out)
     if "<class 'model.test.Test'>" == str(type(out)):
       db_session.query(Test).filter_by(id=id, password=password ).delete()
       db_session.commit()
       return True
-    else: return False
-  except: return False
+    else:
+      print("error1") 
+      return False
+  except:
+    print("error2")
+    return False
 
 
 

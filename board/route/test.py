@@ -73,7 +73,7 @@ def test(app):
     if 'id' in data.keys() and 'password' in data.keys():
       if(delete(id=data['id'],password=data['password'])):
         return json.dumps({"status":"success"})
-      else: json.dumps({"status":"fail2"})
+      else: return json.dumps({"status":"fail2"})
     else: return json.dumps({"status":"fail1"})
 
 

@@ -138,11 +138,21 @@ function show(){
 show(); 
 
 function showDelete(id){
-  myDeleteElement.innerHTML = "<input id='myPassword' placeholder='암호를 입력해주세요.'><button onClick='deleteAction(\""+id+"\")'>";
+  myDeleteElement.innerHTML = "<input id='myPassword' placeholder='암호를 입력해주세요.'><button onClick='deleteAction(\""+id+"\")'>"+id+"글을 삭제하기</button>";
 }
 function deleteAction(id){
   var myPassword = document.getElementById('myPassword').value;
-  consloe.log(myPassword)
+  console.log(myPassword)
+  axios.post(`http://localhost:5000/delete`,{id:id,password:myPassword})
+  .then(async (res)=>{
+     console.log(res)
+		 if(res.data.status=='success'){
+       show() 
+			 myDeleteElement.innerHTML = ""
+		 }else {
+		   alert('비밀번호가 다릅니다.')
+		 }
+  })
 }
 
 </script>

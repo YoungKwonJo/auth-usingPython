@@ -35,17 +35,47 @@ input[type=button], input[type=submit], input[type=reset], button {
 </head>
 <body>
 
-<input id="email" type="text" name="email" placeholder="email" > 
-<br />
-<input id="password" type="password" name="password" placeholder="password" > 
-<button onClick="login()">로그인</button><button onClick="window.history.back()">취소</button>
-<div id="loginStatus"> 비로그인중 </div>
+<div id="login">
+  <input id="email" type="text" name="email" placeholder="email" > 
+  <br />
+  <input id="password" type="password" name="password" placeholder="password" > 
+  <button onClick="login()">로그인</button> 
+</div>
+<div id="loginStatus">  </div>
+<div id="logout">
+<button onClick="logout()">로그아웃</button>
+</div>
 <script>
+var loginElement = document.getElementById('login');
+var logoutElement = document.getElementById('logout');
+loginElement.style.display = 'none'
+logoutElement.style.display = 'none'
 
 var emailElement = document.getElementById('email');
 var passwordElement = document.getElementById('password');
 var loginStatusElement = document.getElementById('loginStatus');
 
+function init(){
+  const token = loadStateInLocalstorage("accessToken") 
+  const tokens = token.split(".")
+	if(tokens.length==3){
+		 loginStatusElement.innerHTML = "로그인됨 "+b64DecodeUnicode(tokens[1])
+		 loginElement.style.display = 'none'
+		 logoutElement.style.display = 'block'
+	}else{
+		 loginStatusElement.innerHTML = ""
+		 loginElement.style.display = 'block'
+		 logoutElement.style.display = 'none'
+	}
+}
+init()
+
+function logout(){
+
+    saveStateInLocalstorage('accessToken', '')
+    saveStateInLocalstorage('refreshToken', '')
+		init()
+}
 
 function login(){
 
@@ -60,7 +90,12 @@ axios.post(`http://localhost:5000/auth/login`,data)
     console.log(res.data)
 		if(res.data.accessToken){
 		  saveStateInLocalstorage("accessToken",res.data.accessToken)
-			loginStatusElement.innerHTML = "로그인됨"
+			init()
+  	  //loginElement.style.display = 'none'
+		  //logoutElement.style.display = 'block'
+
+			loginStatusElement.innerHTML = "로그인됨"+b64DecodeUnicode(res.data.accessToken.split(".")[1])
+
 		}
 		if(res.data.refreshToken){
 		  saveStateInLocalstorage("refreshToken",res.data.refreshToken)
@@ -89,6 +124,14 @@ function saveStateInLocalstorage(name, state){
 		 localStorage.setItem(name, serializedState)
 	} catch (err) {
 	}
+}
+
+//https://developer.mozilla.org/ko/docs/Web/API/WindowBase64/Base64_encoding_and_decoding
+function b64DecodeUnicode(str) {
+    // Going backwards: from bytestream, to percent-encoding, to original string.
+    return decodeURIComponent(atob(str).split('').map(function(c) {
+        return '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2);
+    }).join(''));
 }
 
 </script>

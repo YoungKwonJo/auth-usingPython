@@ -1,0 +1,182 @@
+<html>
+<head>
+<script src="https://unpkg.com/axios/dist/axios.min.js"></script>
+<style>
+table {
+  border-collapse: collapse;
+  width: 100%;
+}
+
+th, td {
+  text-align: left;
+  padding: 8px;
+}
+
+tr:nth-child(even) {background-color: #f2f2f2;}
+
+input[type=button], input[type=submit], input[type=reset], button {
+  background-color: #4CAF50;
+  border: none;
+  color: white;
+  padding: 16px 32px;
+  text-decoration: none;
+  margin: 4px 2px;
+  cursor: pointer;
+}
+
+#myPage ul {
+  display: flex;
+  width: 450px;
+}
+
+#myPage ul li {
+  display: flex;
+  padding: 6px 18px;
+  text-align: center;
+  margin-left: 5px;
+}
+
+.selpage {
+  background-color: #FF7F50;
+  color: white;
+}
+
+</style>
+</head>
+<body>
+
+<table>
+    <thead><tr><th>번호</th></th><th>이름</th><th>제목</th><th>날짜</th></tr></thead>
+    <tbody id="myTbody"></tbody>
+</table>
+<div id="myPage"></div>
+<div id="myDelete"></div>
+<button onClick="window.location.href='http://localhost:5000/static/board/index.html'">글쓰기</button>
+
+<script>
+function getQueryVariable(e) {
+    var t = window.location.search.substring(1);
+    var n = t.split("&");
+    for (var r = 0; r < n.length; r++) {
+        var i = n[r].split("=");
+        if (i[0] == e) {
+            return i[1]
+        }
+    }
+    return false
+}
+
+var page = getQueryVariable('page')?getQueryVariable('page'):0
+var myTbodyElement = document.getElementById('myTbody');
+var myPageElement = document.getElementById('myPage');
+
+var myDeleteElement = document.getElementById('myDelete');
+
+function range(start, end) {
+    var total = [];
+    if (!end) {
+        end = start;
+        start = 0;
+    }
+    for (var i = start; i < end; i += 1) {
+        total.push(i);
+    }
+    return total;
+}
+function test(aaa){
+  console.log(aaa)
+  var aaa = "http://"+location.hostname+':5000/static/board/list.html?page='+aaa
+  window.location.href=aaa
+}
+function addhtml(pages){
+   let aaa = "";
+   pages.map((a,idx) =>{
+    if(a==page) aaa += "<li class='selpage'>"+a+"</li>"
+    else        aaa += "<li onclick='test(\""+a+"\")'>"+a+"</li>"
+   })
+   return aaa;
+}
+
+function pages(count){
+  const pagestep=5;
+  const onepage=10;
+  const totalpage = Math.floor( count/onepage ) 
+  const pagegroupS = page-page%pagestep
+  const pagegroupE = totalpage<page-page%pagestep+pagestep? totalpage:page-page%pagestep+pagestep
+  if(count>0){
+    const pages = range(pagegroupS, pagegroupE)
+    console.log(pages)
+    myPageElement.innerHTML = "<ul>"+"<li class='"+(0==page?'selpage':'')+"' onclick='test(\"0\")'>처음</li>"+
+                              addhtml(pages)+
+                              "<li class='"+(totalpage==page?'selpage':'')+"'  onclick='test(\""+totalpage+"\")'>끝</li>"+"</ul>"
+
+  }else {
+    myPageElement.innerHTML = "---------"
+  }
+}
+
+function show(){
+
+  const token = loadStateInLocalstorage("accessToken") 
+  axios.get(`http://localhost:5000/board/list?page=${page}`,{headers:{ Authorization2: "Bearer "+token }})
+  .then(async (res)=>{
+      console.log(res.data)
+      if(res.data.data&&res.data.count>0){
+        var myhtml = ""
+        pages(res.data.count)
+        for await (var ii of res.data.data){
+            const showtext =" onClick='window.location.href=\"http://localhost:5000/static/board/update.html?id="+
+                       ii.id+"\"'" 
+            myhtml += "<tr><td "+showtext+">"+
+                       ii.id+"</td><td "+showtext+">"+ii.nickname+"</td><td "+showtext+">"+
+                       ii.title+"</td><td "+showtext+">"+ii.date+"</td><td><button onClick='showDelete(\""+ii.id+"\")'>삭제하기</button></td></tr>"
+        }
+        myTbodyElement.innerHTML = myhtml;
+      }
+  })
+  //console.log(myTbodyElement)
+
+}
+show(); 
+
+function showDelete(id){
+  myDeleteElement.innerHTML = "정말, 삭제하시겠습니까?<button onClick='deleteAction(\""+id+"\")'>"+id+"글을 삭제하기</button> <button onClick='cancelDelete()'>취소</button>";
+}
+
+function cancelDelete(){
+ myDeleteElement.innerHTML = ""
+}
+function deleteAction(id){
+  //var myPassword = document.getElementById('myPassword').value;
+  //console.log(myPassword)
+  const token = loadStateInLocalstorage("accessToken") 
+  axios.post(`http://localhost:5000/board/delete`,{id:id},{headers:{ Authorization2: "Bearer "+token }})
+  .then(async (res)=>{
+     console.log(res)
+		 if(res.data.status=='success'){
+       show() 
+			 myDeleteElement.innerHTML = ""
+		 }else {
+		   alert('비밀번호가 다릅니다.')
+		 }
+  })
+}
+
+
+
+function loadStateInLocalstorage(name){
+  try {
+	  const serializedState = localStorage.getItem(name)
+		if (serializedState === null) return undefined
+
+		return JSON.parse(serializedState)
+	} catch (err) {
+	  return undefined
+	}
+}
+
+
+</script>
+
+</body>
+</html>

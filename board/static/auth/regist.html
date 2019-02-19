@@ -1,0 +1,74 @@
+<html>
+<head>
+<script src="https://unpkg.com/axios/dist/axios.min.js"></script>
+<style>
+input[type=text] {
+  border: 1px solid gray;
+  border-radius: 4px;
+  font-size: 25px;
+}
+input[type=password] {
+  border: 1px solid gray;
+  border-radius: 4px;
+  font-size: 25px;
+}
+textarea {
+  width: 500px;
+  height: 150px;
+  padding: 12px 20px;
+  box-sizing: border-box;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  background-color: #f8f8f8;
+  resize: none;
+}
+input[type=button], input[type=submit], input[type=reset], button {
+  background-color: #4CAF50;
+  border: none;
+  color: white;
+  padding: 16px 32px;
+  text-decoration: none;
+  margin: 4px 2px;
+  cursor: pointer;
+}
+</style>
+</head>
+<body>
+
+<input id="nickname" type="text" name="nickname" placeholder="nickname" > 
+<br />
+<input id="email" type="text" name="email" placeholder="email" > 
+<br />
+<input id="password" type="password" name="password" placeholder="password" > 
+<button onClick="insert()">등록하기</button><button onClick="window.history.back()">취소</button>
+<script>
+
+var nicknameElement = document.getElementById('nickname');
+var emailElement = document.getElementById('email');
+var passwordElement = document.getElementById('password');
+
+
+function insert(){
+
+console.log(nicknameElement.value)
+console.log(emailElement.value)
+console.log(passwordElement.value)
+var data = {
+   nickname:nicknameElement.value,
+   email:emailElement.value,
+   password:passwordElement.value,
+}
+axios.post(`http://localhost:5000/auth/signin`,data)
+.then(async (res)=>{
+    console.log(res.data)
+   //var aaa = location.hostname+':5000/static/list.html'
+   //var aaa = "http://"+location.hostname+':5000/static/list.html'
+   //console.log(aaa)
+   //window.location.href=aaa
+})
+}
+
+</script>
+
+</body>
+</html>

@@ -1,0 +1,97 @@
+<html>
+<head>
+<script src="https://unpkg.com/axios/dist/axios.min.js"></script>
+<style>
+input[type=text] {
+  border: 1px solid gray;
+  border-radius: 4px;
+  font-size: 25px;
+}
+input[type=password] {
+  border: 1px solid gray;
+  border-radius: 4px;
+  font-size: 25px;
+}
+textarea {
+  width: 500px;
+  height: 150px;
+  padding: 12px 20px;
+  box-sizing: border-box;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  background-color: #f8f8f8;
+  resize: none;
+}
+input[type=button], input[type=submit], input[type=reset], button {
+  background-color: #4CAF50;
+  border: none;
+  color: white;
+  padding: 16px 32px;
+  text-decoration: none;
+  margin: 4px 2px;
+  cursor: pointer;
+}
+</style>
+</head>
+<body>
+
+<input id="email" type="text" name="email" placeholder="email" > 
+<br />
+<input id="password" type="password" name="password" placeholder="password" > 
+<button onClick="login()">로그인</button><button onClick="window.history.back()">취소</button>
+<div id="loginStatus"> 비로그인중 </div>
+<script>
+
+var emailElement = document.getElementById('email');
+var passwordElement = document.getElementById('password');
+var loginStatusElement = document.getElementById('loginStatus');
+
+
+function login(){
+
+console.log(emailElement.value)
+console.log(passwordElement.value)
+var data = {
+   email:emailElement.value,
+   password:passwordElement.value,
+}
+axios.post(`http://localhost:5000/auth/login`,data)
+.then(async (res)=>{
+    console.log(res.data)
+		if(res.data.accessToken){
+		  saveStateInLocalstorage("accessToken",res.data.accessToken)
+			loginStatusElement.innerHTML = "로그인됨"
+		}
+		if(res.data.refreshToken){
+		  saveStateInLocalstorage("refreshToken",res.data.refreshToken)
+		}
+   //var aaa = location.hostname+':5000/static/list.html'
+   //var aaa = "http://"+location.hostname+':5000/static/list.html'
+   //console.log(aaa)
+   //window.location.href=aaa
+})
+}
+
+function loadStateInLocalstorage(name){
+  try {
+	  const serializedState = localStorage.getItem(name)
+		if (serializedState === null) return undefined
+
+		return JSON.parse(serializedState)
+	} catch (err) {
+	  return undefined
+	}
+}
+
+function saveStateInLocalstorage(name, state){
+  try {
+	   const serializedState = JSON.stringify(state)
+		 localStorage.setItem(name, serializedState)
+	} catch (err) {
+	}
+}
+
+</script>
+
+</body>
+</html>

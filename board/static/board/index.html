@@ -1,0 +1,94 @@
+<html>
+<head>
+<script src="https://unpkg.com/axios/dist/axios.min.js"></script>
+<style>
+input[type=text] {
+  border: 1px solid gray;
+  border-radius: 4px;
+  font-size: 25px;
+}
+input[type=password] {
+  border: 1px solid gray;
+  border-radius: 4px;
+  font-size: 25px;
+}
+textarea {
+  width: 500px;
+  height: 150px;
+  padding: 12px 20px;
+  box-sizing: border-box;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  background-color: #f8f8f8;
+  resize: none;
+}
+input[type=button], input[type=submit], input[type=reset], button {
+  background-color: #4CAF50;
+  border: none;
+  color: white;
+  padding: 16px 32px;
+  text-decoration: none;
+  margin: 4px 2px;
+  cursor: pointer;
+}
+</style>
+</head>
+<body>
+
+<input id="title" type="text" name="title" placeholder="title" >
+<br />
+<textarea id="contents">
+</textarea >
+<br />
+<button onClick="insert()">등록하기</button><button onClick="window.history.back()">취소</button>
+
+<script>
+
+//var nicknameElement = document.getElementById('nickname');
+//var passwordElement = document.getElementById('password');
+var titleElement = document.getElementById('title');
+var contentsElement = document.getElementById('contents');
+
+
+function insert(){
+
+//console.log(nicknameElement.value)
+//console.log(passwordElement.value)
+console.log(titleElement.value)
+console.log(contentsElement.value)
+var data = {
+//   nickname:nicknameElement.value,
+//   password:passwordElement.value,
+   title:titleElement.value,
+   contents:contentsElement.value
+}
+const token = loadStateInLocalstorage("accessToken") 
+axios.post(`http://localhost:5000/board/insert`,data,{ headers:{ Authorization2: "Bearer "+token } })
+.then(async (res)=>{
+    console.log(res.data)
+    //window.history.back()
+   //var aaa = location.hostname+':5000/static/list.html'
+   var aaa = "http://"+location.hostname+':5000/static/board/list.html'
+   //console.log(aaa)
+   window.location.href=aaa
+})
+}
+
+
+
+function loadStateInLocalstorage(name){
+  try {
+	  const serializedState = localStorage.getItem(name)
+		if (serializedState === null) return undefined
+
+		return JSON.parse(serializedState)
+	} catch (err) {
+	  return undefined
+	}
+}
+
+
+</script>
+
+</body>
+</html>

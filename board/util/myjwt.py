@@ -38,11 +38,13 @@ def makeToken(tokenId, tokenType, nickname, accountid):
 ## refreshToken을 통해 accessToken 재발급
 def refreshToken(refresh):
     import json
-    try:
-        data = jwt.decode(refresh, secret)
-        import uuid
-        tokenId = str(uuid.uuid4())
-        accessToken = makeToken(tokenId=tokenId, tokenType='access', nickname=data['nickname'] )
 
-        return json.dumps({"accessToken":accessToken, "refreshToken":refresh})
-    except: return json.dumps({"status":"fail"})
+    #try:
+    data = jwt.decode(refresh, secret, algorithm='HS256', audience=audience)
+    import uuid
+    tokenId = str(uuid.uuid4())
+    accessToken = makeToken(tokenId=tokenId, tokenType='access', nickname=data['nickname'], accountid=data['accountid'] ).decode('utf-8')
+    #print(accessToken)
+
+    return json.dumps({"accessToken":accessToken, "refreshToken":refresh}, ensure_ascii=False)
+    #except: return json.dumps({"status":"fail"})

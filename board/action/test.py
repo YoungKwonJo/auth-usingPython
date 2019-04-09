@@ -21,25 +21,25 @@ def select(page):
   if count>0:
     rows = db_session.query(Test).offset(pagesize*page).limit(pagesize).all()
     
-    print("count : "+str(count))
-    
+    #print("count : "+str(count))
     #print(rows[0].nickname)
     result = [getData(row)  for row in rows]
     
     #print(result)
-    return json.dumps({'count':count,'data':result}, ensure_ascii=False).encode('utf8')
+    return json.dumps({'count':count,'data':result}, ensure_ascii=False) #.encode('utf8')
   else:
     return json.dumps({'count':0,'data':[]})
 
 def selectOne(id):
   row = db_session.query(Test).filter_by(id=id).first()
-  return json.dumps([getData(row)],ensure_ascii=False).encode('utf8')
+  #print(getData(row))
+  return json.dumps(getData(row),ensure_ascii=False) #.encode('utf8')
 
 
 def update(id, password, nickname, title, contents):
   try:
     out = db_session.query(Test).filter_by(id=id,password=password).first()
-    print(str(type(out)))
+    #print(str(type(out)))
     if "<class 'model.test.Test'>" == str(type(out)):
       db_session.query(Test).filter_by(id=id,password=password).update({"nickname":nickname,"title":title,"contents":contents,"dateLastModify":datetime.utcnow() })
       db_session.commit()   
@@ -51,7 +51,7 @@ def update(id, password, nickname, title, contents):
 def delete(id, password):
   try:
     out = db_session.query(Test).filter_by(id=id, password=password ).first()
-    print(out)
+    print(str(out))
     if "<class 'model.test.Test'>" == str(type(out)):
       db_session.query(Test).filter_by(id=id, password=password ).delete()
       db_session.commit()

@@ -28,8 +28,8 @@ init_db_test()
 from model.auth import init_db as init_db_auth
 init_db_auth()
 
-#from model.board import init_db as init_db_board
-#init_db_board()
+from model.board import init_db as init_db_board
+init_db_board()
 
 
 
@@ -44,8 +44,8 @@ test(api)
 from route.auth import auth
 auth(api)
 
-#from route.board import board
-#board(api)
+from route.board import board
+board(api)
 
 
 

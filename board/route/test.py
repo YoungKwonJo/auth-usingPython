@@ -42,7 +42,6 @@ def test(app):
  
   ## 추가하기 POST
   @app.route("/insert", methods=['POST'])
-  @app.header('Authorization', 'Use Bearertoken')
   @app.expect(model)
   class InsertPost(Resource):
     def post(self): 
@@ -86,7 +85,6 @@ def test(app):
 
   ## 데이터 업데이트 하기 POST
   @app.route("/update", methods=['POST'])
-  @app.header('Authorization', 'Use Bearertoken')
   @app.expect(model2)
   class UpdatePost(Resource):
     def post(self):
@@ -101,7 +99,6 @@ def test(app):
 
   ## 데이터 삭제 하기 POST
   @app.route("/delete", methods=['POST'])
-  @app.header('Authorization', 'Use Bearertoken')
   @app.expect(model3)
   class DeletePost(Resource):
     def post(self):

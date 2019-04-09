@@ -27,13 +27,13 @@ def select(page):
     result = [getData(row)  for row in rows]
     
     #print(result)
-    return json.dumps({'count':count,'data':result}, ensure_ascii=False).encode('utf8')
+    return json.dumps({'count':count,'data':result}, ensure_ascii=False)#.encode('utf8')
   else:
     return json.dumps({'count':0,'data':[]})
 
 def selectOne(id):
   row = db_session.query(Board).filter_by(id=id).first()
-  return json.dumps([getData(row)],ensure_ascii=False).encode('utf8')
+  return json.dumps([getData(row)],ensure_ascii=False)#.encode('utf8')
 
 
 def update(id, accountid, nickname, title, contents):
